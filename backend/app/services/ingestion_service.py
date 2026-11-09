@@ -108,7 +108,10 @@ def ingest_transactions(
         session.add(db_tx)
 
         # Update account balance and last synced
-        account.current_balance += norm_tx.amount
+        if norm_tx.category == "Portfolio Valuation":
+            account.current_balance = norm_tx.amount
+        else:
+            account.current_balance += norm_tx.amount
         account.last_synced_at = datetime.datetime.now(datetime.timezone.utc)
         session.add(account)
 

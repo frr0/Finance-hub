@@ -82,7 +82,8 @@ def fetch_remote_file_content(
     client = get_ssh_client(host, user, key_path=key_path)
     try:
         sftp = client.open_sftp()
-        remote_file_path = f"{remote_path.rstrip('/')}/{filename}"
+        safe_filename = os.path.basename(filename)
+        remote_file_path = f"{remote_path.rstrip('/')}/{safe_filename}"
         with sftp.open(remote_file_path, "rb") as f:
             content = f.read()
         sftp.close()

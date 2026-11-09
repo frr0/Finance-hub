@@ -5,7 +5,7 @@ import { Wallet, TrendingUp, TrendingDown, Landmark, ArrowUpRight, ArrowDownRigh
 interface DashboardProps {
   accounts: Account[];
   analytics: NetWorthAnalytics | null;
-  onNavigate: (tab: string) => void;
+  onNavigate: (tab: 'dashboard' | 'ingestion' | 'reconciliation' | 'transactions') => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ accounts, analytics, onNavigate }) => {

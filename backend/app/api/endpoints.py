@@ -29,17 +29,21 @@ def list_transactions(
     limit: int = Query(50, le=500),
     offset: int = 0
 ):
+    count_query = select(func.count(Transaction.id))
     query = select(Transaction).order_by(desc(Transaction.date), desc(Transaction.id))
     if account_id:
         query = query.where(Transaction.account_id == account_id)
+        count_query = count_query.where(Transaction.account_id == account_id)
     if search:
         s = f"%{search.lower()}%"
-        query = query.where(
+        cond = (
             func.lower(Transaction.payee).like(s) |
             func.lower(Transaction.description).like(s)
         )
+        query = query.where(cond)
+        count_query = count_query.where(cond)
 
-    total = len(session.exec(query).all())
+    total = session.exec(count_query).one()
     txs = session.exec(query.offset(offset).limit(limit)).all()
 
     # Preload account names
@@ -129,8 +133,13 @@ def get_net_worth_analytics(session: Session = Depends(get_session)):
     assets = sum(a.current_balance for a in accounts if a.current_balance > 0)
     debts = sum(a.current_balance for a in accounts if a.current_balance < 0)
 
-    # Calculate last 6 months cash flow
-    txs = session.exec(select(Transaction).order_by(Transaction.date)).all()
+    # Calculate last 6 months cash flow (excluding internal transfers)
+    from app.models import TransactionType
+    txs = session.exec(
+        select(Transaction)
+        .where(Transaction.transaction_type != TransactionType.TRANSFER)
+        .order_by(Transaction.date)
+    ).all()
     monthly: dict = {}
     for t in txs:
         m_key = t.date.strftime("%Y-%m")

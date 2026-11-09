@@ -37,7 +37,9 @@ if os.path.exists(frontend_dist):
 
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
-        file_path = os.path.join(frontend_dist, full_path)
-        if os.path.exists(file_path) and os.path.isfile(file_path):
-            return FileResponse(file_path)
+        real_dist = os.path.realpath(frontend_dist)
+        target_file = os.path.realpath(os.path.join(frontend_dist, full_path))
+        if os.path.commonpath([real_dist, target_file]) == real_dist:
+            if os.path.exists(target_file) and os.path.isfile(target_file):
+                return FileResponse(target_file)
         return FileResponse(os.path.join(frontend_dist, "index.html"))
