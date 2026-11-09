@@ -1,0 +1,25 @@
+services:
+  finance-hub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finance-hub
+    restart: unless-stopped
+    ports:
+      - "30095:8000"
+    environment:
+      - DATABASE_DIR=/app/data
+      - FIREFLY_SQL_PATH=/app/firefly_reference/init.sql
+      - SSH_REMOTE_HOST=${SSH_REMOTE_HOST:-192.168.1.185}
+      - SSH_REMOTE_USER=${SSH_REMOTE_USER:-server}
+      - SSH_REMOTE_PATH=${SSH_REMOTE_PATH:-/home/server/Scaricati/robe/Scaricati}
+    volumes:
+      - ./data:/app/data
+      - ~/.ssh:/root/.ssh:ro
+      - /home/francesco/Progetti/Webapp/firefly/init.sql:/app/firefly_reference/init.sql:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
