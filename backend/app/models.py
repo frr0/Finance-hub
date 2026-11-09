@@ -51,7 +51,7 @@ class ImportBatch(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     source: ImportSource = Field(default=ImportSource.WEB_UPLOAD)
     filename: str
-    imported_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    imported_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
     total_rows: int = Field(default=0)
     imported_count: int = Field(default=0)
     skipped_count: int = Field(default=0)
@@ -94,7 +94,7 @@ class PortfolioHolding(SQLModel, table=True):
     quantity: float = Field(default=0.0)
     current_price: float = Field(default=0.0)
     total_value: float = Field(default=0.0)
-    updated_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    updated_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 class ReconciliationSnapshot(SQLModel, table=True):
     __tablename__ = "reconciliation_snapshots"
@@ -104,4 +104,4 @@ class ReconciliationSnapshot(SQLModel, table=True):
     firefly_balance: float = Field(default=0.0)
     financehub_balance: float = Field(default=0.0)
     difference: float = Field(default=0.0)
-    checked_at: datetime.datetime = Field(default_factory=datetime.datetime.utcnow)
+    checked_at: datetime.datetime = Field(default_factory=lambda: datetime.datetime.now(datetime.timezone.utc))
