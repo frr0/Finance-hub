@@ -18,7 +18,7 @@ A high-performance, containerized personal finance manager inspired by **Firefly
 ## Quick Start (Docker)
 
 ```bash
-cd /home/francesco/Progetti/Webapp/finance-hub
+cd /home/francesco/Progetti/Bank-app
 docker compose up -d --build
 ```
 
